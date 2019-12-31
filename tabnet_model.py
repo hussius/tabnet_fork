@@ -225,7 +225,7 @@ class TabNet(object):
               max_outputs=1)
 
       # Visualization of the aggregated feature importances
-      tf.summary.image(
+      tf.compat.v1.summary.image(
           "Aggregated mask",
           tf.expand_dims(tf.expand_dims(aggregated_mask_values, 0), 3),
           max_outputs=1)
@@ -235,7 +235,7 @@ class TabNet(object):
   def classify(self, activations, reuse):
     """TabNet classify block."""
 
-    with tf.variable_scope("Classify", reuse=reuse):
+    with tf.compat.v1.variable_scope("Classify", reuse=reuse):
       logits = tf.layers.dense(activations, self.num_classes, use_bias=False)
       predictions = tf.nn.softmax(logits)
       return logits, predictions
