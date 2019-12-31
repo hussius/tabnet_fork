@@ -224,9 +224,13 @@ def main(csv_path, target_name, task='classification', categorical_features=[],
           encoded_train_batch, reuse=False
       )
 
-      train_loss_op = tf.reduce_mean(
-          tf.nn.l2_loss(t = tf.subtract(predictions, label_train_batch))
-      )
+      #l2_loss = tf.reduce_mean(
+      #    tf.nn.l2_loss(t = tf.subtract(predictions, label_train_batch)) / tf.to_float(tf.size(predictions))
+      #)
+
+      l2_loss = tf.reduce_mean(tf.square(tf.subtract(predictions, label_train_batch)))
+
+      train_loss_op = l2_loss + sparsity_loss_weight * total_entropy
 
   tf.compat.v1.summary.scalar("Total loss", train_loss_op)
 
@@ -268,9 +272,7 @@ def main(csv_path, target_name, task='classification', categorical_features=[],
           encoded_val_batch, reuse=True
       )
 
-    val_loss_op = tf.reduce_mean(
-        tf.nn.l2_loss(t = tf.subtract(predictions, label_val_batch))
-    )
+    val_loss_op = tf.reduce_mean(tf.square(tf.subtract(predictions, label_train_batch)))
 
     val_op = val_loss_op
     tf.compat.v1.summary.scalar("Validation loss", val_loss_op)
@@ -295,9 +297,7 @@ def main(csv_path, target_name, task='classification', categorical_features=[],
           encoded_test_batch, reuse=True
       )
 
-      test_loss_op = tf.reduce_mean(
-          tf.nn.l2_loss(t=tf.subtract(predictions, label_test_batch))
-      )
+      test_loss_op = tf.reduce_mean(tf.square(tf.subtract(predictions, label_test_batch)))
 
       tf.compat.v1.summary.scalar("Test loss", test_loss_op)
       test_op = test_loss_op
