@@ -132,15 +132,16 @@ def prepare_dataset(df, categorical_features, target_name, task, embedding_dim=1
     return dataset_info
 
 
-def main(csv_path, target_name, task='classification', categorical_features=[],
-         feature_dim=128, output_dim=64, batch_size=512, virtual_batch_size=512, batch_momentum=0.7, gamma=1.5,
-         n_steps=6, max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
+def main(csv_path, target_name, task='classification', categorical_features=[], val_frac=0.25, test_frac=0.25,
+         emb_size=1, feature_dim=128, output_dim=64, batch_size=512, virtual_batch_size=512, batch_momentum=0.7,
+         gamma=1.5, n_steps=6, max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
 
   all_data = pd.read_csv(csv_path)
-  trainval_df, test_df = train_test_split(all_data, test_size=0.2)
-  train_df, val_df = train_test_split(trainval_df, test_size=0.1)
+  trainval_df, test_df = train_test_split(all_data, test_size=test_frac)
+  val_frac_after_test_split = val_frac / (1 - test_frac)
+  train_df, val_df = train_test_split(trainval_df, test_size=val_frac_after_test_split)
 
-  dataset_info = prepare_dataset(all_data, categorical_features, target_name, task)
+  dataset_info = prepare_dataset(all_data, categorical_features, target_name, task, embedding_dim=emb_size)
 
   # TabNet model
   tabnet = tabnet_model.TabNet(
