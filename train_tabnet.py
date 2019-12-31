@@ -133,8 +133,8 @@ def prepare_dataset(df, categorical_features, target_name, task, embedding_dim=1
 
 
 def main(csv_path, target_name, task='classification', categorical_features=[],
-         feature_dim=128, output_dim=64, virtual_batch_size=512, batch_momentum=0.7, gamma=1.5, n_steps=6,
-         max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
+         feature_dim=128, output_dim=64, batch_size=512, virtual_batch_size=512, batch_momentum=0.7, gamma=1.5,
+         n_steps=6, max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
 
   all_data = pd.read_csv(csv_path)
   trainval_df, test_df = train_test_split(all_data, test_size=0.2)
@@ -164,7 +164,7 @@ def main(csv_path, target_name, task='classification', categorical_features=[],
   init_localearning_rate = lr
   decay_every = decay_every
   decay_rate = 0.95
-  batch_size = 512
+  batch_size = batch_size
   sparsity_loss_weight = lambda_sparsity
   gradient_thresh = 2000.0
 
