@@ -132,7 +132,9 @@ def prepare_dataset(df, categorical_features, target_name, task, embedding_dim=1
     return dataset_info
 
 
-def main(csv_path, target_name, task='classification', categorical_features=[]):
+def main(csv_path, target_name, task='classification', categorical_features=[],
+         feature_dim=128, output_dim=64, virtual_batch_size=512, batch_momentum=0.7, gamma=1.5, n_steps=6,
+         max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
 
   all_data = pd.read_csv(csv_path)
   trainval_df, test_df = train_test_split(all_data, test_size=0.2)
@@ -144,26 +146,26 @@ def main(csv_path, target_name, task='classification', categorical_features=[]):
   tabnet = tabnet_model.TabNet(
       columns=dataset_info['feature_columns'],
       num_features=dataset_info['num_features'],
-      feature_dim=128,
-      output_dim=64,
-      num_decision_steps=6,
-      relaxation_factor=1.5,
-      batch_momentum=0.7,
-      virtual_batch_size=512,
+      feature_dim=feature_dim,
+      output_dim=output_dim,
+      num_decision_steps=n_steps,
+      relaxation_factor=gamma,
+      batch_momentum=batch_momentum,
+      virtual_batch_size=virtual_batch_size,
       num_classes=dataset_info['num_classes'])
 
   label_column = target_name
 
   # Training parameters
-  max_steps = 25
+  max_steps = max_steps
   display_step = 5
   val_step = 5
   save_step = 5
-  init_localearning_rate = 0.02
-  decay_every = 500
+  init_localearning_rate = lr
+  decay_every = decay_every
   decay_rate = 0.95
   batch_size = 512
-  sparsity_loss_weight = 0.0001
+  sparsity_loss_weight = lambda_sparsity
   gradient_thresh = 2000.0
 
   # Input sampling
