@@ -86,10 +86,10 @@ class TabNet(object):
   def encoder(self, data, reuse, is_training):
     """TabNet encoder model."""
 
-    with tf.variable_scope("Encoder", reuse=reuse):
+    with tf.compat.v1.variable_scope("Encoder", reuse=reuse):
 
       # Reads and normalizes input features.
-      features = tf.feature_column.input_layer(data, self.columns)
+      features = tf.compat.v1.feature_column.input_layer(data, self.columns)
       features = tf.layers.batch_normalization(
           features, training=is_training, momentum=self.batch_momentum)
       batch_size = tf.shape(features)[0]
@@ -211,7 +211,7 @@ class TabNet(object):
           # selection.
           total_entropy += tf.reduce_mean(
               tf.reduce_sum(
-                  -mask_values * tf.log(mask_values + self.epsilon),
+                  -mask_values * tf.math.log(mask_values + self.epsilon),
                   axis=1)) / (
                       self.num_decision_steps - 1)
 
@@ -219,7 +219,7 @@ class TabNet(object):
           masked_features = tf.multiply(mask_values, features)
 
           # Visualization of the feature selection mask at decision step ni
-          tf.summary.image(
+          tf.compat.v1.summary.image(
               "Mask for step" + str(ni),
               tf.expand_dims(tf.expand_dims(mask_values, 0), 3),
               max_outputs=1)
@@ -243,6 +243,6 @@ class TabNet(object):
   def regress(self, activations, reuse):
     """TabNet regress block."""
 
-    with tf.variable_scope("Regress", reuse=reuse):
+    with tf.compat.v1.variable_scope("Regress", reuse=reuse):
       predictions = tf.layers.dense(activations, 1)
       return predictions
