@@ -83,10 +83,10 @@ class TabNet(object):
     self.num_classes = num_classes
     self.epsilon = epsilon
 
-  def encoder(self, data, reuse, is_training):
+  def encoder(self, data, is_training):
     """TabNet encoder model."""
 
-    with tf.compat.v1.variable_scope("Encoder", reuse=reuse):
+    with tf.compat.v1.variable_scope("Encoder", reuse=tf.compat.v1.AUTO_REUSE):
 
       # Reads and normalizes input features.
       features = tf.compat.v1.feature_column.input_layer(data, self.columns)
@@ -232,17 +232,17 @@ class TabNet(object):
 
       return output_aggregated, total_entropy
 
-  def classify(self, activations, reuse):
+  def classify(self, activations):
     """TabNet classify block."""
 
-    with tf.compat.v1.variable_scope("Classify", reuse=reuse):
+    with tf.compat.v1.variable_scope("Classify", reuse=tf.compat.v1.AUTO_REUSE):
       logits = tf.layers.dense(activations, self.num_classes, use_bias=False)
       predictions = tf.nn.softmax(logits)
       return logits, predictions
 
-  def regress(self, activations, reuse):
+  def regress(self, activations):
     """TabNet regress block."""
 
-    with tf.compat.v1.variable_scope("Regress", reuse=reuse):
+    with tf.compat.v1.variable_scope("Regress", reuse=tf.compat.v1.AUTO_REUSE):
       predictions = tf.layers.dense(activations, 1)
       return predictions
