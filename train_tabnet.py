@@ -132,7 +132,7 @@ def prepare_dataset(df, categorical_features, target_name, task, embedding_dim=1
     return dataset_info
 
 
-def main(csv_path, target_name, task='classification', model_name='tabnet',
+def main(csv_path, target_name, task='classification', model_name='tabnet', tb_log_location='./tflog',
          categorical_features=[], val_frac=0.25, test_frac=0.25,
          emb_size=1, feature_dim=128, output_dim=64,
          batch_size=512, virtual_batch_size=512, batch_momentum=0.7,
@@ -313,7 +313,7 @@ def main(csv_path, target_name, task='classification', model_name='tabnet',
   summaries = tf.compat.v1.summary.merge_all()
 
   with tf.compat.v1.Session() as sess:
-    summary_writer = tf.compat.v1.summary.FileWriter("./tflog/" + model_name, sess.graph)
+    summary_writer = tf.compat.v1.summary.FileWriter(f'{tb_log_location}/{model_name}', sess.graph)
 
     sess.run(init)
     sess.run(init_local)
