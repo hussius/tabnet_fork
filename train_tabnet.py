@@ -132,8 +132,10 @@ def prepare_dataset(df, categorical_features, target_name, task, embedding_dim=1
     return dataset_info
 
 
-def main(csv_path, target_name, task='classification', categorical_features=[], val_frac=0.25, test_frac=0.25,
-         emb_size=1, feature_dim=128, output_dim=64, batch_size=512, virtual_batch_size=512, batch_momentum=0.7,
+def main(csv_path, target_name, task='classification', model_name='tabnet',
+         categorical_features=[], val_frac=0.25, test_frac=0.25,
+         emb_size=1, feature_dim=128, output_dim=64,
+         batch_size=512, virtual_batch_size=512, batch_momentum=0.7,
          gamma=1.5, n_steps=6, max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
 
   all_data = pd.read_csv(csv_path)
@@ -304,7 +306,6 @@ def main(csv_path, target_name, task='classification', categorical_features=[], 
       test_op = test_loss_op
 
   # Training setup
-  model_name = "tabnet"
   init = tf.initialize_all_variables()
   init_local = tf.compat.v1.local_variables_initializer()
   init_table = tf.compat.v1.tables_initializer(name="Initialize_all_tables")
