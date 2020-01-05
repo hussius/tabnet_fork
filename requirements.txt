@@ -1,5 +1,6 @@
 fire
 gast==0.2.2
+hyperopt
 numpy>=1.15.1
 pandas
 scikit-learn
