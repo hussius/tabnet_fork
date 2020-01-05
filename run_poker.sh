@@ -10,7 +10,7 @@ python train_tabnet.py \
        --feature-dim 24 \
        --output-dim 8 \
        --lambda-sparsity 0.001 \
-       --batch-size 512 \
+       --batch-size 4096 \
        --virtual-batch-size 256 \
        --batch-momentum 0.8 \
        --n_steps 4 \
