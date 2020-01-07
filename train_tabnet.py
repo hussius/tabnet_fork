@@ -139,7 +139,7 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
          gamma=1.5, n_steps=6, max_steps=25, lr=0.02, decay_every=500, lambda_sparsity=0.0001):
 
   all_data = pd.read_csv(csv_path)
-  trainval_df, test_df = train_test_split(all_data, test_size=test_frac)
+  trainval_df, test_df = train_test_split(all_data, test_size=test_frac, stratify=all_data[target_name])
   val_frac_after_test_split = val_frac / (1 - test_frac)
   train_df, val_df = train_test_split(trainval_df, test_size=val_frac_after_test_split)
 
@@ -208,12 +208,12 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
   # Define the model and losses
 
   encoded_train_batch, total_entropy = tabnet.encoder(
-      feature_train_batch, reuse=False, is_training=True)
+      feature_train_batch, is_training=True)
 
   if task == 'classification':
 
       logits_orig_batch, _ = tabnet.classify(
-          encoded_train_batch, reuse=False)
+          encoded_train_batch)
 
       softmax_orig_key_op = tf.reduce_mean(
           tf.nn.sparse_softmax_cross_entropy_with_logits(
@@ -224,7 +224,7 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
   else:
 
       predictions = tabnet.regress(
-          encoded_train_batch, reuse=False
+          encoded_train_batch
       )
 
       #l2_loss = tf.reduce_mean(
@@ -256,13 +256,13 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
 
   # Validation performance
   encoded_val_batch, _ = tabnet.encoder(
-      feature_val_batch, reuse=True, is_training=True)
+      feature_val_batch, is_training=True)
 
   val_op = None
 
   if task == 'classification':
     _, prediction_val = tabnet.classify(
-        encoded_val_batch, reuse=True)
+        encoded_val_batch)
 
     predicted_labels = tf.cast(tf.argmax(prediction_val, 1), dtype=tf.int32)
     val_eq_op = tf.equal(predicted_labels, label_val_batch)
@@ -272,7 +272,7 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
 
   else:
     predictions = tabnet.regress(
-          encoded_val_batch, reuse=True
+          encoded_val_batch
       )
 
     val_loss_op = tf.reduce_mean(tf.square(tf.subtract(predictions, label_train_batch)))
@@ -282,12 +282,12 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
 
   # Test performance
   encoded_test_batch, _ = tabnet.encoder(
-      feature_test_batch, reuse=True, is_training=True)
+      feature_test_batch, is_training=True)
   test_op = None
 
   if task == 'classification':
     _, prediction_test = tabnet.classify(
-        encoded_test_batch, reuse=True)
+        encoded_test_batch)
 
     predicted_labels = tf.cast(tf.argmax(prediction_test, 1), dtype=tf.int32)
     test_eq_op = tf.equal(predicted_labels, label_test_batch)
@@ -297,7 +297,7 @@ def main(csv_path, target_name, task='classification', model_name='tabnet', tb_l
 
   else:
       predictions = tabnet.regress(
-          encoded_test_batch, reuse=True
+          encoded_test_batch
       )
 
       test_loss_op = tf.reduce_mean(tf.square(tf.subtract(predictions, label_test_batch)))

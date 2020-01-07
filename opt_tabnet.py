@@ -267,7 +267,7 @@ def main(csv_path, target_name,
          emb_size=1):
 
     all_data = pd.read_csv(csv_path)
-    trainval_df, test_df = train_test_split(all_data, test_size=test_frac)
+    trainval_df, test_df = train_test_split(all_data, test_size=test_frac, stratify=all_data[target_name])
     val_frac_after_test_split = val_frac / (1 - test_frac)
     train_df, val_df = train_test_split(trainval_df, test_size=val_frac_after_test_split)
     dataset_info = prepare_dataset(all_data, categorical_features, target_name, embedding_dim=emb_size)
