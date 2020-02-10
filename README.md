@@ -17,7 +17,7 @@ Run a command like
 
 ``` 
 python train_tabnet.py --csv-path data/adult.csv \
-                       --target-name <=50K \
+                       --target-name "<=50K" \
                        --categorical-features workclass,education,marital.status,occupation,relationship,race,sex,native.country
                        --task classification 
 ``` 
