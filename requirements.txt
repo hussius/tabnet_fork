@@ -4,5 +4,5 @@ hyperopt
 numpy>=1.15.1
 pandas
 scikit-learn
-tensorflow==1.15.2
+tensorflow==2.3.1
 wget>=3.2
